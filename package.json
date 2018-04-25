@@ -1,8 +1,8 @@
 {
-  "name": "ammuench-ts-template",
+  "name": "google-assistant-dota",
   "version": "0.0.1",
-  "description": "ammuench's template for starting a TS app",
-  "license": "n/a",
+  "description": "A Google Assistant Action integration to work with DPC Rankings, Dota Games, and more",
+  "license": "MIT",
   "repository": "",
   "author": "",
   "keywords": [
@@ -24,12 +24,16 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
+    "node-fetch": "^2.1.2",
     "tslint": "^5.9.0"
   },
   "devDependencies": {
     "@types/chai": "^3.0.0",
+    "@types/cheerio": "^0.22.7",
     "@types/mocha": "^2.0.0",
     "@types/node": "^7.0.0",
+    "@types/node-fetch": "^1.6.9",
     "@types/sinon": "^4.3.0",
     "chai": "^3.0.0",
     "coveralls": "^2.0.0",

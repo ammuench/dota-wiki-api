@@ -1,2 +1,2 @@
-# ammuench TS Template
-My base template for starting a TS app
+# Google Assistant Dota
+A Google Assistant Action integration to work with DPC Rankings, Dota Games, and more
