@@ -1,7 +1,7 @@
 {
-  "name": "google-assistant-dota",
+  "name": "dota-wiki-api",
   "version": "0.0.1",
-  "description": "A Google Assistant Action integration to work with DPC Rankings, Dota Games, and more",
+  "description": "A module to communicate with Liquipedia's Dota 2 Wiki to fetch Team Info, DPC Rankings, Dota Game Schedules, and more!",
   "license": "MIT",
   "repository": "",
   "author": "",
