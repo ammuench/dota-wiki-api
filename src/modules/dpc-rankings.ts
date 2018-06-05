@@ -9,6 +9,7 @@ export interface IRankKey {
 }
 
 export interface IRank {
+    errorMsg?: string;
     hasError?: boolean;
     isClinched: boolean;
     isIneligible: boolean;
@@ -19,60 +20,112 @@ export interface IRank {
 
 export class DPCRankings {
     private cacheFetch = new CacheFetch();
-    private userAgentKey: string;
+    private userAgentValue: string;
 
-    constructor(userAgentKey: string) {
-        this.userAgentKey = userAgentKey;
+    /**
+     * Creates an instance of DPCRankings.
+     * @param {string} userAgentValue User Agent to be passed on every fetch call (per Liquipedia rules)
+     * @memberof DPCRankings
+     */
+    constructor(userAgentValue: string) {
+        this.userAgentValue = userAgentValue;
     }
 
+    /**
+     * Fetches rank object of team at given rank value
+     *
+     * @param {string} rank Rank number (as string)
+     * @returns {Promise<IRank>}
+     * @memberof DPCRankings
+     */
     public getRankByStanding(rank: string): Promise<IRank> {
         return new Promise((resolve, reject) => {
             const fullRankings = this.getRankings();
-            fullRankings.then((rankmap) => {
-                for (const key of rankmap.keys()) {
-                    if (key.rank === rank) {
-                        resolve(rankmap.get(key));
+            fullRankings
+                .then((rankmap: Map<IRankKey, IRank>) => {
+                    for (const key of rankmap.keys()) {
+                        if (key.rank === rank) {
+                            resolve(rankmap.get(key));
+                        }
                     }
-                }
-                reject({
-                    hasError: true,
-                    isClinched: false,
-                    isIneligible: false,
-                    rank: 'No team exists at that rank',
-                    score: null,
-                    team: null,
+                    reject({
+                        errorMsg: 'No team at the given rank',
+                        hasError: true,
+                        isClinched: false,
+                        isIneligible: false,
+                        rank: null,
+                        score: null,
+                        team: null,
+                    });
+                })
+                .catch((err: any) => {
+                    reject({
+                        error: `Error attempting to fetch rank data\n${err}`,
+                        hasError: true,
+                        isClinched: false,
+                        isIneligible: false,
+                        rank: null,
+                        score: null,
+                        team: null,
+                    });
                 });
-            });
         });
     }
 
-    public getRankByTeam(team: string): Promise<any> {
+    /**
+     * Fetches rank object of team at with a matching name
+     *
+     * @param {string} team Team Name (case insensitive)
+     * @returns {Promise<IRank>}
+     * @memberof DPCRankings
+     */
+    public getRankByTeam(team: string): Promise<IRank> {
         return new Promise((resolve, reject) => {
             const fullRankings = this.getRankings();
-            fullRankings.then((rankmap) => {
-                for (const key of rankmap.keys()) {
-                    if (key.team.toLowerCase() === team.toLowerCase()) {
-                        resolve(rankmap.get(key));
+            fullRankings
+                .then((rankmap: Map<IRankKey, IRank>) => {
+                    for (const key of rankmap.keys()) {
+                        if (key.team.toLowerCase() === team.toLowerCase()) {
+                            resolve(rankmap.get(key));
+                        }
                     }
-                }
-                reject({
-                    hasError: true,
-                    isClinched: false,
-                    isIneligible: false,
-                    rank: null,
-                    score: null,
-                    team: 'No team with that name exists',
+                    reject({
+                        error: 'No team with that name exists',
+                        hasError: true,
+                        isClinched: false,
+                        isIneligible: false,
+                        rank: null,
+                        score: null,
+                        team: null,
+                    });
+                })
+                .catch((err: any) => {
+                    reject({
+                        error: `Error attempting to fetch rank data\n${err}`,
+                        hasError: true,
+                        isClinched: false,
+                        isIneligible: false,
+                        rank: null,
+                        score: null,
+                        team: null,
+                    });
                 });
-            });
         });
     }
 
-    public getRankings(): Promise<Map<IRankKey, IRank>> {
+    /**
+     * Fetches Map of all teams with DPC Points
+     * Map ordered by rank, shows ineligible teams
+     *
+     * @returns {Promise<Map<IRankKey, IRank> | string>}
+     * @memberof DPCRankings
+     */
+    public getRankings(): Promise<Map<IRankKey, IRank> | string> {
         return new Promise((resolve, reject) => {
             const requestInfo: RequestInit = {
                 headers: {
                     'Accept-Encoding': 'gzip',
-                    'User-Agent': this.userAgentKey,
+                    'User-Agent': this.userAgentValue,
                 },
                 method: 'GET',
             };
@@ -82,7 +135,7 @@ export class DPCRankings {
                     // resolve(this._parseRanks(json));
                 })
                 .catch((err: any) => {
-                    reject(`err: ${err}`);
+                    reject(`Error fetching team list: ${err}`);
                 });
         });
     }
