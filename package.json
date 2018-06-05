@@ -3,10 +3,17 @@
   "version": "0.1.0",
   "description": "A module to communicate with Liquipedia's Dota 2 Wiki to fetch Team Info, DPC Rankings, Dota Game Schedules, and more!",
   "license": "MIT",
-  "repository": "",
-  "author": "",
+  "repository": "https://github.com/ammuench/dota-wiki-api",
+  "author": "Alex Muench (https://alexmuen.ch)",
   "keywords": [
-    ""
+    "dota",
+    "dota2",
+    "dota 2",
+    "liquipedia",
+    "esports",
+    "defense",
+    "ancients",
+    "valve"
   ],
   "files": [
     "dist"
@@ -53,7 +60,8 @@
       "src/**/*"
     ],
     "exclude": [
-      "lib"
+      "dist",
+      "src/demo.ts"
     ],
     "extension": [
       ".ts"
