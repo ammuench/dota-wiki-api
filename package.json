@@ -1,6 +1,6 @@
 {
   "name": "dota-wiki-api",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "description": "A module to communicate with Liquipedia's Dota 2 Wiki to fetch Team Info, DPC Rankings, Dota Game Schedules, and more!",
   "license": "MIT",
   "repository": "",
