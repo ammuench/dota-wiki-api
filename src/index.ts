@@ -1,20 +1,22 @@
 import { DPCRankings, IRank, IRankKey } from './modules/dpc-rankings';
 
-export interface DotaWikiConfig {
+export { IRank, IRankKey };
+
+export interface IDotaWikiConfig {
     userAgentValue: string;
 }
 
 export class DotaWikiApi {
     private dpc: DPCRankings;
-    private config: DotaWikiConfig;
-    
+    private config: IDotaWikiConfig;
+
     /**
-     * Creates an instance of DotaWikiApi.  
+     * Creates an instance of DotaWikiApi.
      *
      * @param {DotaWikiConfig} config Configuration object for starting DotaWikiApi
      * @memberof DotaWikiApi
      */
-    constructor(config: DotaWikiConfig) {
+    constructor(config: IDotaWikiConfig) {
         this.dpc = new DPCRankings(this.config.userAgentValue);
     }
 
@@ -34,7 +36,7 @@ export class DotaWikiApi {
                 })
                 .catch((err) => {
                     reject(err);
-                })
+                });
         });
     }
 
@@ -46,7 +48,7 @@ export class DotaWikiApi {
      * @returns {Promise<IRank>}
      * @memberof DotaWikiApi
      */
-    public getRankByStanding(teamName: string): Promise<IRank> {
+    public getRankByTeamname(teamName: string): Promise<IRank> {
         return new Promise((resolve, reject) => {
             this.dpc.getRankByTeam(teamName)
                 .then((res) => {
@@ -54,7 +56,7 @@ export class DotaWikiApi {
                 })
                 .catch((err) => {
                     reject(err);
-                })
+                });
         });
     }
 
@@ -74,7 +76,7 @@ export class DotaWikiApi {
                 })
                 .catch((err: string) => {
                     reject(err);
-                })
+                });
         });
     }
 }
