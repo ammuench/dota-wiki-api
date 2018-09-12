@@ -1,7 +1,7 @@
 import { DPCRankings, IRank, IRankKey } from './modules/dpc-rankings';
-import { DotaTeams, IPlayer, ITeam } from './modules/teams';
+import { DotaTeams, ITeam, ITeamMember } from './modules/teams';
 
-export { IRank, IRankKey };
+export { IRank, IRankKey, ITeam, ITeamMember };
 
 export interface IDotaWikiConfig {
     userAgentValue: string;

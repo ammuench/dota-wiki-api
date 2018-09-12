@@ -17,7 +17,7 @@ const myConfig: IDotaWikiConfig = {
 
 const dTeam = new DotaTeams('GADotaSuite/0.0.1 (https://github.com/ammuench/google-assistant-dota)');
 
-dTeam.getTeamInfo('CompLexity_Gaming')
+dTeam.getTeamInfo('Optic')
     .then((res) => {
         console.log(res);
     })

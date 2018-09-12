@@ -3,7 +3,7 @@ import { RequestInit } from 'node-fetch';
 
 import { CacheFetch } from './cachefetch';
 
-export interface IPlayer {
+export interface ITeamMember {
     handle: string;
     isCaptain: boolean;
     joinDate?: string;
@@ -14,7 +14,7 @@ export interface IPlayer {
 
 export interface ITeam {
     name: string;
-    roster: IPlayer[];
+    roster: ITeamMember[];
     teamLogo?: string;
     location?: string;
     region: string;
@@ -128,12 +128,13 @@ export class DotaTeams {
             }
         }
 
+        // TODO Set this to only grab ACTIVE roster
         const rosterTableRows = $('.table-responsive.table-striped.roster-card').eq(0).find('tr');
         const ROSTER_TABLE_OFFSET = 2;
-        const roster: IPlayer[] = [];
+        const roster: ITeamMember[] = [];
         for (let i = ROSTER_TABLE_OFFSET, len = rosterTableRows.length; i < len; i++) {
             const playerRow = rosterTableRows.eq(i);
-            const playerObject: IPlayer = {
+            const playerObject: ITeamMember = {
                 handle: playerRow.find('.ID').eq(0).find('b a').eq(1).attr('title'),
                 isCaptain: !!(playerRow.find('.ID > a').eq(0).html()),
                 joinDate: this._trimDate(playerRow.find('.Date .Date').eq(0).text()),
