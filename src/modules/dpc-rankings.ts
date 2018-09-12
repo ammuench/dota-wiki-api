@@ -120,7 +120,7 @@ export class DPCRankings {
      * @returns {Promise<Map<IRankKey, IRank> | string>}
      * @memberof DPCRankings
      */
-    public getRankings(): Promise<Map<IRankKey, IRank> | string> {
+    public getRankings(): Promise<Map<IRankKey, IRank>> {
         return new Promise((resolve, reject) => {
             const requestInfo: RequestInit = {
                 headers: {
@@ -131,8 +131,7 @@ export class DPCRankings {
             };
             this.cacheFetch.cacheFetch('http://liquipedia.net/dota2/api.php?action=parse&format=json&page=Dota_Pro_Circuit/Rankings/Teams', requestInfo)
                 .then((json: any) => {
-                    resolve(this._parseRanks(json.parse.text['*'])); // REAL CODE PUT BACK
-                    // resolve(this._parseRanks(json));
+                    resolve(this._parseRanks(json.parse.text['*']));
                 })
                 .catch((err: any) => {
                     reject(`Error fetching team list: ${err}`);

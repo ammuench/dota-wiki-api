@@ -28,7 +28,8 @@
     "coverage": "nyc --include='src/**/*.ts' --reporter=text --reporter=html --reporter=lcov mocha --require ts-node/register --compilers ts:ts-node/register --recursive 'test/**/*-spec.ts'",
     "watch": "npm run build -- --watch",
     "watch:test": "npm run test -- --watch",
-    "start": "node dist/demo.js"
+    "start": "node dist/demo.js",
+    "demo": "npm run build && node dist/demo.js"
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",

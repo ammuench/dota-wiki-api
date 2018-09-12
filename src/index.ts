@@ -1,4 +1,5 @@
 import { DPCRankings, IRank, IRankKey } from './modules/dpc-rankings';
+import { DotaTeams, IPlayer, ITeam } from './modules/teams';
 
 export { IRank, IRankKey };
 
@@ -8,6 +9,7 @@ export interface IDotaWikiConfig {
 
 export class DotaWikiApi {
     private dpc: DPCRankings;
+    private dTeam: DotaTeams;
     private config: IDotaWikiConfig;
 
     /**
@@ -18,6 +20,7 @@ export class DotaWikiApi {
      */
     constructor(config: IDotaWikiConfig) {
         this.dpc = new DPCRankings(this.config.userAgentValue);
+        this.dTeam = new DotaTeams(this.config.userAgentValue);
     }
 
     /**
@@ -27,17 +30,8 @@ export class DotaWikiApi {
      * @returns {Promise<IRank>}
      * @memberof DotaWikiApi
      */
-    public getTeamByStanding(rank: number): Promise<IRank> {
-        return new Promise((resolve, reject) => {
-            const stringRank = rank.toString();
-            this.dpc.getRankByStanding(stringRank)
-                .then((res) => {
-                    resolve(res);
-                })
-                .catch((err) => {
-                    reject(err);
-                });
-        });
+    public async getTeamByStanding(rank: number): Promise<IRank> {
+        return this.dpc.getRankByStanding(rank.toString());
     }
 
     /**
@@ -48,16 +42,8 @@ export class DotaWikiApi {
      * @returns {Promise<IRank>}
      * @memberof DotaWikiApi
      */
-    public getRankByTeamname(teamName: string): Promise<IRank> {
-        return new Promise((resolve, reject) => {
-            this.dpc.getRankByTeam(teamName)
-                .then((res) => {
-                    resolve(res);
-                })
-                .catch((err) => {
-                    reject(err);
-                });
-        });
+    public async getRankByTeamname(teamName: string): Promise<IRank> {
+        return this.dpc.getRankByTeam(teamName);
     }
 
     /**
@@ -65,18 +51,21 @@ export class DotaWikiApi {
      * Returns map on success, string w/ error code on error
      * Map ordered by rank, shows ineligible teams
      *
-     * @returns {Promise<Map<IRankKey, IRank> | string>}
+     * @returns {Promise<Map<IRankKey, IRank>>}
      * @memberof DotaWikiApi
      */
-    public getAllRanks(): Promise<Map<IRankKey, IRank> | string> {
-        return new Promise((resolve, reject) => {
-            this.dpc.getRankings()
-                .then((res: Map<IRankKey, IRank>) => {
-                    resolve(res);
-                })
-                .catch((err: string) => {
-                    reject(err);
-                });
-        });
+    public async getAllRanks(): Promise<Map<IRankKey, IRank>> {
+        return this.dpc.getRankings();
+    }
+
+    /**
+     * Fetches a team's roster & basic information
+     *
+     * @param {string} teamName Name of team
+     * @returns {Promise<ITeam>}
+     * @memberof DotaWikiApi
+     */
+    public async getTeam(teamName: string): Promise<ITeam> {
+        return this.dTeam.getTeamInfo(teamName);
     }
 }

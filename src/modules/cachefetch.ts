@@ -16,27 +16,30 @@ export class CacheFetch {
      */
     public cacheFetch(url: string | Request, init?: RequestInit): Promise<any> {
         return new Promise((resolve, reject) => {
-            if (this._canFetchNew(new Date())) {
-                fetch(url, init)
-                    .then((res) => {
-                        this.lastFetch = new Date();
-                        const json = res.json();
-                        this.apiCache[url.toString()] = json;
-                        resolve(json);
-                    })
-                    .catch((err) => {
-                        reject(err);
-                    });
-            } else {
-                if (this.apiCache[url.toString()]) {
-                    resolve(this.apiCache[url.toString()]);
-                } else {
-                    reject();
-                }
-            }
+            this._canFetchNew(new Date())
+                .then(() => {
+                    fetch(url, init)
+                        .then((res) => {
+                            this.lastFetch = new Date();
+                            const json = res.json();
+                            this.apiCache[url.toString()] = json;
+                            resolve(json);
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                });
         });
     }
 
+    /**
+     * Fake fetch that uses the data in cache.ts to avoid making excessive network calls
+     *
+     * @param {(string | Request)} url
+     * @param {RequestInit} [init]
+     * @returns {Promise<any>}
+     * @memberof CacheFetch
+     */
     public fakeFetch(url: string | Request, init?: RequestInit): Promise<any> {
         return new Promise((resolve, reject) => {
             resolve(dpcTable);
@@ -51,11 +54,20 @@ export class CacheFetch {
      * @returns {boolean} True if the fetch request can be made
      * @memberof CacheFetch
      */
-    private _canFetchNew(currentTime: Date): boolean {
-        if (currentTime.getTime() - this.lastFetch.getTime() >= 3000) {
-            return true;
-        }
-
-        return false;
+    private _canFetchNew(currentTime: Date): Promise<void> {
+        return new Promise<void>((resolve) => {
+            const waitTime = (currentTime.getTime() - this.lastFetch.getTime());
+            if (currentTime.getTime() - this.lastFetch.getTime() >= 3000) {
+                resolve();
+            } else {
+                setTimeout(() => {
+                    resolve();
+                }, (3000 - waitTime));
+            }
+        });
     }
+
+    // private _getUnixTIme(dateTime: Date): number {
+    //     Math.floor(dateTime / 1000);
+    // }
 }
