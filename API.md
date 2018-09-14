@@ -74,3 +74,56 @@ All methods related to DPC rankings and standings.
 
     On success, fetches a map with keys `IRankKEy` and values `IRank`.  Values are returned in descending order by rank.
     On error, provides an error message as a string
+
+## Teams
+All methods and info related to Dota2 teams
+
+### Interfaces
+
+  * **ITeam**
+
+  An object type that contains basic info for a dota team
+  ```typescript
+    interface ITeam {
+      name: string;
+      roster: IPlayer[];
+      teamLogo?: string;
+      location?: string;
+      region: string;
+      manager?: string;
+      captain?: string;
+      earnings?: string;
+      rank?: string;
+    }
+  ```
+
+### Methods
+
+  * **getTeam(teamName: string): Promise\<ITeam\>**
+
+    Fetches an `ITeam` object for the team name provided. 
+    Will try and correct for variations by following the first redirect if need be, otherwise returns an error. 
+    Team roster provided as an array of `IPlayer` objects
+
+## Players
+All methods and info related to Dota2 Players
+
+### Interfaces
+
+  * **IPlayer**
+
+  An object type that contains basic info for a dota team
+  ```typescript
+    interface IPlayer {
+      handle: string;
+      isCaptain: boolean;
+      joinDate?: string;
+      name?: string;
+      photo?: string;
+      position?: string;
+      region?: string;
+    }
+  ```
+
+### Methods
+No player-specific methods implemented yet

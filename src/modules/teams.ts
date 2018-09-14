@@ -1,20 +1,12 @@
 import * as cheerio from 'cheerio';
 import { RequestInit } from 'node-fetch';
 
-import { CacheFetch } from './cachefetch';
-
-export interface ITeamMember {
-    handle: string;
-    isCaptain: boolean;
-    joinDate?: string;
-    name?: string;
-    position?: string;
-    region?: string;
-}
+import { Base, IDotaWikiConfig } from '../utils/base';
+import { IPlayer } from './players';
 
 export interface ITeam {
     name: string;
-    roster: ITeamMember[];
+    roster: IPlayer[];
     teamLogo?: string;
     location?: string;
     region: string;
@@ -24,17 +16,10 @@ export interface ITeam {
     rank?: string;
 }
 
-export class DotaTeams {
-    private cacheFetch = new CacheFetch();
-    private userAgentValue: string;
+export class DotaTeams extends Base {
 
-    /**
-     * Creates an instance of DotaTeams.
-     * @param {string} userAgentValue User Agent to be passed on every fetch call (per Liquipedia rules)
-     * @memberof DPCRankings
-     */
-    constructor(userAgentValue: string) {
-        this.userAgentValue = userAgentValue;
+    constructor(config: IDotaWikiConfig) {
+        super(config);
     }
 
     public async getTeamInfo(teamName: string): Promise<ITeam> {
@@ -46,7 +31,11 @@ export class DotaTeams {
                 },
                 method: 'GET',
             };
-            this.cacheFetch.cacheFetch(`http://liquipedia.net/dota2/api.php?action=parse&format=json&page=${teamName}`, requestInfo)
+            const teamNameEncode = teamName.replace(/ /g, '_');
+            const teamURL = (teamNameEncode.indexOf('.') !== -1)
+                ? `http://liquipedia.net/dota2/api.php?action=parse&origin=*&format=json&page=${teamNameEncode}&*`
+                : `http://liquipedia.net/dota2/api.php?action=parse&origin=*&format=json&page=${teamNameEncode}`;
+            this.cacheFetch.cacheFetch(teamURL, requestInfo)
                 .then(async (json: any) => {
                     try {
                         const teamJson: any = await this._checkRedirect(json, requestInfo);
@@ -67,7 +56,9 @@ export class DotaTeams {
                 if (teamJson.parse.text['*'].indexOf('Redirect to:') !== -1) {
                     const redirectMatch = /\/dota2\/(.+)(" title)/.exec(teamJson.parse.text['*']);
                     if (redirectMatch) {
-                        const redirectURL = `http://liquipedia.net/dota2/api.php?action=parse&format=json&page=${redirectMatch[1]}`;
+                        const redirectURL = (redirectMatch[1].indexOf('.') !== -1)
+                            ? `http://liquipedia.net/dota2/api.php?action=parse&origin=*&format=json&page=${redirectMatch[1]}&*`
+                            : `http://liquipedia.net/dota2/api.php?action=parse&origin=*&format=json&page=${redirectMatch[1]}`;
                         this.cacheFetch.cacheFetch(redirectURL, requestInfo)
                             .then((rdJson) => {
                                 resolve(rdJson);
@@ -131,10 +122,10 @@ export class DotaTeams {
         // TODO Set this to only grab ACTIVE roster
         const rosterTableRows = $('.table-responsive.table-striped.roster-card').eq(0).find('tr');
         const ROSTER_TABLE_OFFSET = 2;
-        const roster: ITeamMember[] = [];
+        const roster: IPlayer[] = [];
         for (let i = ROSTER_TABLE_OFFSET, len = rosterTableRows.length; i < len; i++) {
             const playerRow = rosterTableRows.eq(i);
-            const playerObject: ITeamMember = {
+            const playerObject: IPlayer = {
                 handle: playerRow.find('.ID').eq(0).find('b a').eq(1).attr('title'),
                 isCaptain: !!(playerRow.find('.ID > a').eq(0).html()),
                 joinDate: this._trimDate(playerRow.find('.Date .Date').eq(0).text()),

@@ -5,7 +5,7 @@ const myConfig: IDotaWikiConfig = {
     userAgentValue: 'GADotaSuite/0.0.1 (https://github.com/ammuench/google-assistant-dota)',
 };
 
-// const myDotaWikiApi = new DotaWikiApi(myConfig);
+const myDotaWikiApi = new DotaWikiApi(myConfig);
 
 // myDotaWikiApi.getAllRanks()
 //     .then((res: Map<IRankKey, IRank>) => {
@@ -15,9 +15,9 @@ const myConfig: IDotaWikiConfig = {
 //         console.log(err);
 //     });
 
-const dTeam = new DotaTeams('GADotaSuite/0.0.1 (https://github.com/ammuench/google-assistant-dota)');
+// const dTeam = new DotaTeams(myConfig);
 
-dTeam.getTeamInfo('Optic')
+myDotaWikiApi.getTeam('VGJ.Storm')
     .then((res) => {
         console.log(res);
     })

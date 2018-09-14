@@ -1,7 +1,7 @@
 import * as cheerio from 'cheerio';
 import fetch, { RequestInit } from 'node-fetch';
 
-import { CacheFetch } from './cachefetch';
+import { Base, IDotaWikiConfig } from '../utils/base';
 
 export interface IRankKey {
     rank?: string;
@@ -18,17 +18,10 @@ export interface IRank {
     team: string;
 }
 
-export class DPCRankings {
-    private cacheFetch = new CacheFetch();
-    private userAgentValue: string;
+export class DPCRankings extends Base {
 
-    /**
-     * Creates an instance of DPCRankings.
-     * @param {string} userAgentValue User Agent to be passed on every fetch call (per Liquipedia rules)
-     * @memberof DPCRankings
-     */
-    constructor(userAgentValue: string) {
-        this.userAgentValue = userAgentValue;
+    constructor(config: IDotaWikiConfig) {
+        super(config);
     }
 
     /**

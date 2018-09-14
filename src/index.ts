@@ -1,16 +1,13 @@
 import { DPCRankings, IRank, IRankKey } from './modules/dpc-rankings';
-import { DotaTeams, ITeam, ITeamMember } from './modules/teams';
+import { IPlayer } from './modules/players';
+import { DotaTeams, ITeam } from './modules/teams';
+import { IDotaWikiConfig } from './utils/base';
 
-export { IRank, IRankKey, ITeam, ITeamMember };
-
-export interface IDotaWikiConfig {
-    userAgentValue: string;
-}
+export { IDotaWikiConfig, IPlayer, IRank, IRankKey, ITeam };
 
 export class DotaWikiApi {
     private dpc: DPCRankings;
     private dTeam: DotaTeams;
-    private config: IDotaWikiConfig;
 
     /**
      * Creates an instance of DotaWikiApi.
@@ -19,8 +16,8 @@ export class DotaWikiApi {
      * @memberof DotaWikiApi
      */
     constructor(config: IDotaWikiConfig) {
-        this.dpc = new DPCRankings(this.config.userAgentValue);
-        this.dTeam = new DotaTeams(this.config.userAgentValue);
+        this.dpc = new DPCRankings(config);
+        this.dTeam = new DotaTeams(config);
     }
 
     /**
