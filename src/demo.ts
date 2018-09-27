@@ -17,7 +17,7 @@ const myDotaWikiApi = new DotaWikiApi(myConfig);
 
 // const dTeam = new DotaTeams(myConfig);
 
-myDotaWikiApi.getTeam('VGJ.Storm')
+myDotaWikiApi.getPlayer('Arteezy')
     .then((res) => {
         console.log(res);
     })

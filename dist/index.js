@@ -9,10 +9,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const dpc_rankings_1 = require("./modules/dpc-rankings");
+const players_1 = require("./modules/players");
 const teams_1 = require("./modules/teams");
 class DotaWikiApi {
     constructor(config) {
         this.dpc = new dpc_rankings_1.DPCRankings(config);
+        this.dPlayer = new players_1.DotaPlayers(config);
         this.dTeam = new teams_1.DotaTeams(config);
     }
     getTeamByStanding(rank) {
@@ -33,6 +35,11 @@ class DotaWikiApi {
     getTeam(teamName) {
         return __awaiter(this, void 0, void 0, function* () {
             return this.dTeam.getTeamInfo(teamName);
+        });
+    }
+    getPlayer(playerName) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.dPlayer.getPlayerInfo(playerName);
         });
     }
 }

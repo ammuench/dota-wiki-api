@@ -6,7 +6,7 @@ import { IPlayer } from './players';
 
 export interface ITeam {
     name: string;
-    roster: IPlayer[];
+    roster: ITeamMember[];
     teamLogo?: string;
     location?: string;
     region: string;
@@ -14,6 +14,15 @@ export interface ITeam {
     captain?: string;
     earnings?: string;
     rank?: string;
+}
+
+export interface ITeamMember {
+    handle: string;
+    isCaptain: boolean;
+    joinDate: string;
+    name: string;
+    position: string;
+    region: string;
 }
 
 export class DotaTeams extends Base {
@@ -33,12 +42,12 @@ export class DotaTeams extends Base {
             };
             const teamNameEncode = teamName.replace(/ /g, '_');
             const teamURL = (teamNameEncode.indexOf('.') !== -1)
-                ? `http://liquipedia.net/dota2/api.php?action=parse&origin=*&format=json&page=${teamNameEncode}&*`
-                : `http://liquipedia.net/dota2/api.php?action=parse&origin=*&format=json&page=${teamNameEncode}`;
+                ? `${this.cacheFetch.urlStub}?action=parse&origin=*&format=json&page=${teamNameEncode}&*`
+                : `${this.cacheFetch.urlStub}?action=parse&origin=*&format=json&page=${teamNameEncode}`;
             this.cacheFetch.cacheFetch(teamURL, requestInfo)
                 .then(async (json: any) => {
                     try {
-                        const teamJson: any = await this._checkRedirect(json, requestInfo);
+                        const teamJson: any = await this.cacheFetch.checkRedirect(json, requestInfo);
                         resolve(this._parseTeam(teamJson.parse.text['*'], teamJson.parse.displaytitle));
                     } catch (e) {
                         reject(e);
@@ -47,34 +56,6 @@ export class DotaTeams extends Base {
                 .catch((err: any) => {
                     reject(`Error fetching team list: ${err}`);
                 });
-        });
-    }
-
-    private async _checkRedirect(teamJson: any, requestInfo: any): Promise<any> {
-        return new Promise<any>((resolve, reject) => {
-            try {
-                if (teamJson.parse.text['*'].indexOf('Redirect to:') !== -1) {
-                    const redirectMatch = /\/dota2\/(.+)(" title)/.exec(teamJson.parse.text['*']);
-                    if (redirectMatch) {
-                        const redirectURL = (redirectMatch[1].indexOf('.') !== -1)
-                            ? `http://liquipedia.net/dota2/api.php?action=parse&origin=*&format=json&page=${redirectMatch[1]}&*`
-                            : `http://liquipedia.net/dota2/api.php?action=parse&origin=*&format=json&page=${redirectMatch[1]}`;
-                        this.cacheFetch.cacheFetch(redirectURL, requestInfo)
-                            .then((rdJson) => {
-                                resolve(rdJson);
-                            })
-                            .catch((err) => {
-                                reject(err);
-                            });
-                    } else {
-                        reject('Invalid URL.  This likely means your page query value is incorrect or has no match');
-                    }
-                } else {
-                    resolve(teamJson);
-                }
-            } catch (e) {
-                reject(e);
-            }
         });
     }
 
@@ -122,18 +103,21 @@ export class DotaTeams extends Base {
         // TODO Set this to only grab ACTIVE roster
         const rosterTableRows = $('.table-responsive.table-striped.roster-card').eq(0).find('tr');
         const ROSTER_TABLE_OFFSET = 2;
-        const roster: IPlayer[] = [];
-        for (let i = ROSTER_TABLE_OFFSET, len = rosterTableRows.length; i < len; i++) {
-            const playerRow = rosterTableRows.eq(i);
-            const playerObject: IPlayer = {
-                handle: playerRow.find('.ID').eq(0).find('b a').eq(1).attr('title'),
-                isCaptain: !!(playerRow.find('.ID > a').eq(0).html()),
-                joinDate: this._trimDate(playerRow.find('.Date .Date').eq(0).text()),
-                name: this._trimName(playerRow.find('.Name').eq(0).text()),
-                position: playerRow.find('.PositionWoTeam2').eq(0).text(),
-                region: playerRow.find('.ID').eq(0).find('b a').eq(0).attr('title'),
-            };
-            roster.push(playerObject);
+        const roster: ITeamMember[] = [];
+
+        if (rosterTableRows.eq(0).text().indexOf('Active Squad') !== -1) {
+            for (let i = ROSTER_TABLE_OFFSET, len = rosterTableRows.length; i < len; i++) {
+                const playerRow = rosterTableRows.eq(i);
+                const playerObject: ITeamMember = {
+                    handle: playerRow.find('.ID').eq(0).find('b a').eq(1).attr('title'),
+                    isCaptain: !!(playerRow.find('.ID > a').eq(0).html()),
+                    joinDate: this._trimDate(playerRow.find('.Date .Date').eq(0).text()),
+                    name: this._trimName(playerRow.find('.Name').eq(0).text()),
+                    position: playerRow.find('.PositionWoTeam2').eq(0).text(),
+                    region: playerRow.find('.ID').eq(0).find('b a').eq(0).attr('title'),
+                };
+                roster.push(playerObject);
+            }
         }
 
         return {

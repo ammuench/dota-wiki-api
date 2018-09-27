@@ -26,12 +26,12 @@ class DotaTeams extends base_1.Base {
                 };
                 const teamNameEncode = teamName.replace(/ /g, '_');
                 const teamURL = (teamNameEncode.indexOf('.') !== -1)
-                    ? `http://liquipedia.net/dota2/api.php?action=parse&origin=*&format=json&page=${teamNameEncode}&*`
-                    : `http://liquipedia.net/dota2/api.php?action=parse&origin=*&format=json&page=${teamNameEncode}`;
+                    ? `${this.cacheFetch.urlStub}?action=parse&origin=*&format=json&page=${teamNameEncode}&*`
+                    : `${this.cacheFetch.urlStub}?action=parse&origin=*&format=json&page=${teamNameEncode}`;
                 this.cacheFetch.cacheFetch(teamURL, requestInfo)
                     .then((json) => __awaiter(this, void 0, void 0, function* () {
                     try {
-                        const teamJson = yield this._checkRedirect(json, requestInfo);
+                        const teamJson = yield this.cacheFetch.checkRedirect(json, requestInfo);
                         resolve(this._parseTeam(teamJson.parse.text['*'], teamJson.parse.displaytitle));
                     }
                     catch (e) {
@@ -41,38 +41,6 @@ class DotaTeams extends base_1.Base {
                     .catch((err) => {
                     reject(`Error fetching team list: ${err}`);
                 });
-            });
-        });
-    }
-    _checkRedirect(teamJson, requestInfo) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return new Promise((resolve, reject) => {
-                try {
-                    if (teamJson.parse.text['*'].indexOf('Redirect to:') !== -1) {
-                        const redirectMatch = /\/dota2\/(.+)(" title)/.exec(teamJson.parse.text['*']);
-                        if (redirectMatch) {
-                            const redirectURL = (redirectMatch[1].indexOf('.') !== -1)
-                                ? `http://liquipedia.net/dota2/api.php?action=parse&origin=*&format=json&page=${redirectMatch[1]}&*`
-                                : `http://liquipedia.net/dota2/api.php?action=parse&origin=*&format=json&page=${redirectMatch[1]}`;
-                            this.cacheFetch.cacheFetch(redirectURL, requestInfo)
-                                .then((rdJson) => {
-                                resolve(rdJson);
-                            })
-                                .catch((err) => {
-                                reject(err);
-                            });
-                        }
-                        else {
-                            reject('Invalid URL.  This likely means your page query value is incorrect or has no match');
-                        }
-                    }
-                    else {
-                        resolve(teamJson);
-                    }
-                }
-                catch (e) {
-                    reject(e);
-                }
             });
         });
     }
@@ -118,17 +86,19 @@ class DotaTeams extends base_1.Base {
         const rosterTableRows = $('.table-responsive.table-striped.roster-card').eq(0).find('tr');
         const ROSTER_TABLE_OFFSET = 2;
         const roster = [];
-        for (let i = ROSTER_TABLE_OFFSET, len = rosterTableRows.length; i < len; i++) {
-            const playerRow = rosterTableRows.eq(i);
-            const playerObject = {
-                handle: playerRow.find('.ID').eq(0).find('b a').eq(1).attr('title'),
-                isCaptain: !!(playerRow.find('.ID > a').eq(0).html()),
-                joinDate: this._trimDate(playerRow.find('.Date .Date').eq(0).text()),
-                name: this._trimName(playerRow.find('.Name').eq(0).text()),
-                position: playerRow.find('.PositionWoTeam2').eq(0).text(),
-                region: playerRow.find('.ID').eq(0).find('b a').eq(0).attr('title'),
-            };
-            roster.push(playerObject);
+        if (rosterTableRows.eq(0).text().indexOf('Active Squad') !== -1) {
+            for (let i = ROSTER_TABLE_OFFSET, len = rosterTableRows.length; i < len; i++) {
+                const playerRow = rosterTableRows.eq(i);
+                const playerObject = {
+                    handle: playerRow.find('.ID').eq(0).find('b a').eq(1).attr('title'),
+                    isCaptain: !!(playerRow.find('.ID > a').eq(0).html()),
+                    joinDate: this._trimDate(playerRow.find('.Date .Date').eq(0).text()),
+                    name: this._trimName(playerRow.find('.Name').eq(0).text()),
+                    position: playerRow.find('.PositionWoTeam2').eq(0).text(),
+                    region: playerRow.find('.ID').eq(0).find('b a').eq(0).attr('title'),
+                };
+                roster.push(playerObject);
+            }
         }
         return Object.assign({ name,
             roster,

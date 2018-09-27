@@ -86,7 +86,7 @@ All methods and info related to Dota2 teams
   ```typescript
     interface ITeam {
       name: string;
-      roster: IPlayer[];
+      roster: ITeamMember[];
       teamLogo?: string;
       location?: string;
       region: string;
@@ -97,13 +97,27 @@ All methods and info related to Dota2 teams
     }
   ```
 
+  * **ITeamMember**
+
+  An object type that contains basic info for a dota team member
+  ```typescript
+    interface ITeamMember {
+      handle: string;
+      isCaptain: boolean;
+      joinDate: string;
+      name: string;
+      position: string;
+      region: string;
+    }
+  ```
+
 ### Methods
 
   * **getTeam(teamName: string): Promise\<ITeam\>**
 
     Fetches an `ITeam` object for the team name provided. 
     Will try and correct for variations by following the first redirect if need be, otherwise returns an error. 
-    Team roster provided as an array of `IPlayer` objects
+    Team roster provided as an array of `ITeamMember` objects
 
 ## Players
 All methods and info related to Dota2 Players
@@ -116,14 +130,19 @@ All methods and info related to Dota2 Players
   ```typescript
     interface IPlayer {
       handle: string;
-      isCaptain: boolean;
-      joinDate?: string;
-      name?: string;
-      photo?: string;
-      position?: string;
-      region?: string;
+      name: string;
+      photo: string;
+      position: string[];
+      region?: string[];
+      birthday?: string;
+      earnings?: string;
+      team?: string;];
     }
   ```
 
 ### Methods
-No player-specific methods implemented yet
+
+  * **getPlayer(playerName: string): Promise\<IPlayer\>**
+
+    Fetches an `IPlayer` object for the team name provided. 
+    Will try and correct for name variations by following the first redirect if need be, otherwise returns an error. 

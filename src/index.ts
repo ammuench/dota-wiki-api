@@ -1,12 +1,13 @@
 import { DPCRankings, IRank, IRankKey } from './modules/dpc-rankings';
-import { IPlayer } from './modules/players';
-import { DotaTeams, ITeam } from './modules/teams';
+import { DotaPlayers, IPlayer } from './modules/players';
+import { DotaTeams, ITeam, ITeamMember } from './modules/teams';
 import { IDotaWikiConfig } from './utils/base';
 
-export { IDotaWikiConfig, IPlayer, IRank, IRankKey, ITeam };
+export { IDotaWikiConfig, IPlayer, IRank, IRankKey, ITeam, ITeamMember };
 
 export class DotaWikiApi {
     private dpc: DPCRankings;
+    private dPlayer: DotaPlayers;
     private dTeam: DotaTeams;
 
     /**
@@ -17,6 +18,7 @@ export class DotaWikiApi {
      */
     constructor(config: IDotaWikiConfig) {
         this.dpc = new DPCRankings(config);
+        this.dPlayer = new DotaPlayers(config);
         this.dTeam = new DotaTeams(config);
     }
 
@@ -64,5 +66,16 @@ export class DotaWikiApi {
      */
     public async getTeam(teamName: string): Promise<ITeam> {
         return this.dTeam.getTeamInfo(teamName);
+    }
+
+    /**
+     * Fetches a player's basic information
+     *
+     * @param {string} playerName Name of team
+     * @returns {Promise<IPlayer>}
+     * @memberof DotaWikiApi
+     */
+    public async getPlayer(playerName: string): Promise<IPlayer> {
+        return this.dPlayer.getPlayerInfo(playerName);
     }
 }

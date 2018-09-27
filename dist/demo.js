@@ -5,7 +5,7 @@ const myConfig = {
     userAgentValue: 'GADotaSuite/0.0.1 (https://github.com/ammuench/google-assistant-dota)',
 };
 const myDotaWikiApi = new index_1.DotaWikiApi(myConfig);
-myDotaWikiApi.getTeam('VGJ.Storm')
+myDotaWikiApi.getPlayer('Arteezy')
     .then((res) => {
     console.log(res);
 })

@@ -81,7 +81,7 @@ class DPCRankings extends base_1.Base {
                 },
                 method: 'GET',
             };
-            this.cacheFetch.cacheFetch('http://liquipedia.net/dota2/api.php?action=parse&format=json&page=Dota_Pro_Circuit/Rankings/Teams', requestInfo)
+            this.cacheFetch.cacheFetch(`${this.cacheFetch.urlStub}?action=parse&format=json&page=Dota_Pro_Circuit/Rankings/Teams`, requestInfo)
                 .then((json) => {
                 resolve(this._parseRanks(json.parse.text['*']));
             })
