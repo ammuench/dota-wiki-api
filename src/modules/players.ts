@@ -43,7 +43,7 @@ export class DotaPlayers extends Base {
                     }
                 })
                 .catch((err: any) => {
-                    reject(`Error fetching team list: ${err}`);
+                    reject(`Error fetching player: ${err}`);
                 });
         });
     }

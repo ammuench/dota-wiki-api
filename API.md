@@ -146,3 +146,41 @@ All methods and info related to Dota2 Players
 
     Fetches an `IPlayer` object for the team name provided. 
     Will try and correct for name variations by following the first redirect if need be, otherwise returns an error. 
+
+## Matches
+All methods and info related to Dota2 Players
+
+### Interfaces
+
+  * **IMatch**
+
+  An object type that contains basic info for a match.  `startTime` is provided as ISO.  Scores are provided on  live matches.  Team and Tournament URLs are provided if they exist in Liquipedia
+  ```typescript
+    interface IMatch {
+      team1: string;
+      team1Score?: number;
+      team1URL?: string;
+      team2: string;
+      team2Score?: number;
+      team2URL?: string;
+      startTime?: string;
+      tournament: string;
+      tournamentURL: string;
+    }
+  ```
+
+  * **IMatchList**
+
+  An object type that arrays of live and upcoming matches.  If there are no live/upcoming matches an empty array will return
+  ```typescript
+    interface IMatchList {
+      liveGames: IMatch[];
+      upcomingGames: IMatch[];
+    }
+  ```
+
+### Methods
+
+  * **getMatches(): Promise\<IMatchList\>**
+
+    Fetches an `IMatchList` object.

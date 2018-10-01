@@ -1,11 +1,11 @@
 import { DotaWikiApi, IDotaWikiConfig, IRank, IRankKey } from './index';
-import { DotaTeams } from './modules/teams';
+import { DotaMatches } from './modules/matches';
 
 const myConfig: IDotaWikiConfig = {
     userAgentValue: 'GADotaSuite/0.0.1 (https://github.com/ammuench/google-assistant-dota)',
 };
 
-const myDotaWikiApi = new DotaWikiApi(myConfig);
+const myDotaWikiApi = new DotaMatches(myConfig);
 
 // myDotaWikiApi.getAllRanks()
 //     .then((res: Map<IRankKey, IRank>) => {
@@ -17,7 +17,7 @@ const myDotaWikiApi = new DotaWikiApi(myConfig);
 
 // const dTeam = new DotaTeams(myConfig);
 
-myDotaWikiApi.getPlayer('Arteezy')
+myDotaWikiApi.getMatchList()
     .then((res) => {
         console.log(res);
     })

@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
+    "date-fns": "^1.29.0",
     "node-fetch": "^2.1.2",
     "tslint": "^5.9.0"
   },

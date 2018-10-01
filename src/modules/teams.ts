@@ -2,7 +2,6 @@ import * as cheerio from 'cheerio';
 import { RequestInit } from 'node-fetch';
 
 import { Base, IDotaWikiConfig } from '../utils/base';
-import { IPlayer } from './players';
 
 export interface ITeam {
     name: string;

@@ -1,12 +1,14 @@
 import { DPCRankings, IRank, IRankKey } from './modules/dpc-rankings';
+import { DotaMatches, IMatch, IMatchList } from './modules/matches';
 import { DotaPlayers, IPlayer } from './modules/players';
 import { DotaTeams, ITeam, ITeamMember } from './modules/teams';
 import { IDotaWikiConfig } from './utils/base';
 
-export { IDotaWikiConfig, IPlayer, IRank, IRankKey, ITeam, ITeamMember };
+export { IDotaWikiConfig, IMatch, IMatchList, IPlayer, IRank, IRankKey, ITeam, ITeamMember };
 
 export class DotaWikiApi {
     private dpc: DPCRankings;
+    private dMatches: DotaMatches;
     private dPlayer: DotaPlayers;
     private dTeam: DotaTeams;
 
@@ -18,6 +20,7 @@ export class DotaWikiApi {
      */
     constructor(config: IDotaWikiConfig) {
         this.dpc = new DPCRankings(config);
+        this.dMatches = new DotaMatches(config);
         this.dPlayer = new DotaPlayers(config);
         this.dTeam = new DotaTeams(config);
     }
@@ -77,5 +80,17 @@ export class DotaWikiApi {
      */
     public async getPlayer(playerName: string): Promise<IPlayer> {
         return this.dPlayer.getPlayerInfo(playerName);
+    }
+
+    /**
+     * Fetches a list of current live and upcoming matches.
+     * Start times listed in ISO
+     * Team URLs and Tournament URLs will be provided if available in the wiki
+     *
+     * @returns {Promise<IMatchList>}
+     * @memberof DotaWikiApi
+     */
+    public async getMatches(): Promise<IMatchList> {
+        return this.dMatches.getMatchList();
     }
 }
